@@ -18,15 +18,14 @@ public class TestController {
     }
 
     @RequestMapping(value = "/organization/{idOrganization}", method = RequestMethod.GET)
-    public String getOrganization(@PathVariable int idOrganization) {
-        Organization organization = organizationService.getOrganization(idOrganization);
-        //return organization;
-        return organization.getName() + " / " + organization.getDescription(); // 이렇게 안해도 나와야 되는데 으으으으으으으ㅡ으 몰라 내일
+    public Organization getOrganization(@PathVariable int idOrganization) {
+        return organizationService.getOrganization(idOrganization);
+        //return organization.getName() + " / " + organization.getDescription(); // 이렇게 안해도 나와야 되는데 으으으으으으으ㅡ으 몰라 내일
+        // 안되는 이유는 자바 10 때문이었음. 스벌.
     }
 
     @RequestMapping(value = "/organization/all", method = RequestMethod.GET)
     public List<Organization> getOrganization() {
-        List<Organization> organizations = organizationService.getAllOrganization();
-        return organizations;
+        return organizationService.getAllOrganization();
     }
 }

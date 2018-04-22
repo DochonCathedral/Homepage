@@ -1,16 +1,10 @@
 package ga.dochon.homepage.entity;
 
-
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Table(name="Organization")
-@Data
 public class Organization implements Serializable {
     @Id
     @GeneratedValue
@@ -25,12 +19,4 @@ public class Organization implements Serializable {
 
     @Column
     private String description;
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
 }
