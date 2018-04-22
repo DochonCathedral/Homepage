@@ -14,7 +14,7 @@ public class TestController {
 
     @RequestMapping("/")
     public String index() {
-        return "Dochon!";
+        return "Dochon!!";
     }
 
     @RequestMapping(value = "/organization/{idOrganization}", method = RequestMethod.GET)
