@@ -1,16 +1,11 @@
 language: java
 
-before_script:
-  - echo $HOME
-  - echo $JAVA_OPTS
-
 jdk:
   - oraclejdk8
 
 os:
   - linux
 
-install: true
 script:
   - ./gradlew build
   - bash <(curl -s https://codecov.io/bash)
