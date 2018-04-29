@@ -5,4 +5,5 @@ jdk:
 
 script:
   - ./gradlew build
-  - bash <(curl -s https://codecov.io/bash)
+  - ./upload.sh
+  
