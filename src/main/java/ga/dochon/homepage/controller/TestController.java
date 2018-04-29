@@ -25,10 +25,7 @@ public class TestController {
 
     @RequestMapping(value = "/organization/{idOrganization}", method = RequestMethod.GET)
     public Organization getOrganization(@PathVariable int idOrganization) {
-    	Organization a = organizationService.getOrganization(idOrganization);
-        
-    	return a;        //return organization.getName() + " / " + organization.getDescription(); // 이렇게 안해도 나와야 되는데 으으으으으으으ㅡ으 몰라 내일
-        // 안되는 이유는 자바 10 때문이었음. 스벌.
+    	return organizationService.getOrganization(idOrganization);
     }
 
     @RequestMapping(value = "/organization/all", method = RequestMethod.GET)
