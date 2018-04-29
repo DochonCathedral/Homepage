@@ -4,10 +4,11 @@ jdk:
   - oraclejdk8
 
 addons:
-  apt:
-    packages:
-      - sshpass
-      - scp
+  ssh_known_hosts:
+    - $HOST_IP
+
+before_install:
+  - sudo apt-get install sshpass
 
 script:
   - ./gradlew build
