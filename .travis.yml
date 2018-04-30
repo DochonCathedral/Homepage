@@ -12,6 +12,14 @@ before_install:
 
 script:
   - ./gradlew build
-  
-after_success:
-  - ./upload.sh
+
+deploy:
+  provider: script
+  script: ./deploy.sh
+  on:
+    branch: master
+
+notifications:
+  email:
+    - ysg0316@naver.com
+    - varian.k.lee@gmail.com
