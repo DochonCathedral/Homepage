@@ -1,4 +1,4 @@
-package ga.dochon.homepage.controller;
+package ga.dochon.homepage.api.controller;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import ga.dochon.homepage.entity.Organization;
+import ga.dochon.homepage.model.entity.Organization;
 import ga.dochon.homepage.service.OrganizationService;
 import org.springframework.web.bind.annotation.ResponseBody;
 
