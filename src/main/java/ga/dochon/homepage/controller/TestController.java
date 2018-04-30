@@ -19,7 +19,7 @@ public class TestController {
 
     @RequestMapping("/")
     public String index(Model model) {
-    	model.addAttribute("name", "우와~");
+    	model.addAttribute("name", "우와!~");
         return "index";
     }
 
