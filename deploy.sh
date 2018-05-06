@@ -9,8 +9,8 @@ sleep 10
 
 echo ""
 echo "[After stopping homepage..]"
-sshpass -p $SSH_PW ssh -o StrictHostKeyChecking=no app@$HOST_IP "sudo systemctl status homepage.service
-"
+sshpass -p $SSH_PW ssh -o StrictHostKeyChecking=no app@$HOST_IP "sudo systemctl status homepage.service"
+
 echo ""
 echo "[Starting homepage..]"
 sshpass -p $SSH_PW ssh -o StrictHostKeyChecking=no app@$HOST_IP "sudo systemctl start homepage.service"

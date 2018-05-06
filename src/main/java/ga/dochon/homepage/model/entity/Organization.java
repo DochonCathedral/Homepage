@@ -1,6 +1,8 @@
-package ga.dochon.homepage.entity;
+package ga.dochon.homepage.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -8,6 +10,8 @@ import java.io.Serializable;
 @Entity
 @Table(name="Organization")
 @Data
+@Accessors(chain = true)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Organization implements Serializable {
     @Id
     @GeneratedValue

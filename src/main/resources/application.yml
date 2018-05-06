@@ -1,0 +1,46 @@
+## 기본 개발 환경 configuration
+spring:
+  datasource:
+    url: jdbc:h2:~/homepage
+    username: local_user
+    password: local_user_password
+    initialization-mode: always # 이거 말고 밑의 hibernate.ddl-auto 를 create-drop 등으로 설정하여 하이버네이트로 초기화할 수도 있음
+
+  jpa:
+    hibernate:
+      ddl-auto: none # 시작 시 @Table 클래스대로 DB에 만들어버림. none으로 하면 안 만듬
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      use-new-id-generator-mappings: false
+    properties:
+      hibernate.format_sql: true # 로그에 SQL 이쁘게 나오도록 하기
+
+
+server:
+  port: 80 # port 80으로 잡아둠.
+
+logging:
+  path: ./logs/
+  level:
+    root: WARN
+    org:
+      hibernate.SQL: DEBUG
+      hibernate.type.descriptor.sql.BasicBinder: TRACE
+      springframework.web: DEBUG
+
+---
+## 운영계 configuration -> 필요시 개발계를 만들자..
+# 위의 기본 설정을 가져다 쓰고, 아래에 새로 넣으면 Override됨.
+spring:
+  profiles: production
+
+  datasource:
+    url: jdbc:mysql://db.dochon.ga:3306/homepage?useUnicode=yes&characterEncoding=utf-8&useSSL=false
+    username: backend_user
+    password: backend_user_password
+
+server:
+  port: 80
+
+logging:
+  path: /home/app/logs/
