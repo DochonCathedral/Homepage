@@ -1,4 +1,4 @@
-## 기본 Local 개발 환경 configuration
+## 기본 개발 환경 configuration
 spring:
   datasource:
     url: jdbc:h2:~/homepage
@@ -29,10 +29,10 @@ logging:
       springframework.web: DEBUG
 
 ---
-## 개발계 configuration
+## 운영계 configuration -> 필요시 개발계를 만들자..
 # 위의 기본 설정을 가져다 쓰고, 아래에 새로 넣으면 Override됨.
 spring:
-  profiles: dev
+  profiles: production
 
   datasource:
     url: jdbc:mysql://db.dochon.ga:3306/homepage?useUnicode=yes&characterEncoding=utf-8&useSSL=false
@@ -44,8 +44,3 @@ server:
 
 logging:
   path: /home/app/logs/
-
----
-## 운영계 configuration
-spring:
-  profiles: production
