@@ -38,6 +38,7 @@ spring:
     url: jdbc:mysql://db.dochon.ga:3306/homepage?useUnicode=yes&characterEncoding=utf-8&useSSL=false
     username: backend_user
     password: backend_user_password
+    initialization-mode: never
 
 server:
   port: 80
