@@ -38,10 +38,6 @@ public class HomepageApplicationTests {
     }
 
     @Test
-    public void contextLoads() {
-    }
-
-    @Test
     public void boardTest() {
         boardGetTest();
         boardPostTest();
