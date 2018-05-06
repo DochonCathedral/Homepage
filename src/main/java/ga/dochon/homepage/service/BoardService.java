@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
@@ -29,7 +30,8 @@ public class BoardService {
     ReplyRepository replyRepository;
 
     public Board getBoard(int idBoard) {
-        return boardRepository.getOne(idBoard);
+        Example<Board> idExample = Example.of(new Board().setIdBoard(idBoard));
+        return boardRepository.findOne(idExample).orElse(null); // getOne()은 Lazyloading 함...
     }
 
     @Transactional
@@ -56,6 +58,7 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
+    @Transactional
     public boolean updateBoard(Board boardInput) {
         if (boardRepository.existsById(boardInput.getIdBoard())) {
             boardRepository.save(boardInput);
@@ -66,10 +69,17 @@ public class BoardService {
         }
     }
 
-    public List<Board> findBoards(String name, Integer idOrganization, Short type) {
+    public List<Board> findBoards(String name, Integer idOrganization, Board.BoardType type) {
+        Board boardForExample = new Board();
+        if (Objects.nonNull(name))
+            boardForExample.setName(name);
+        if (Objects.nonNull(idOrganization))
+            boardForExample.setIdOrganization(idOrganization);
+        if (Objects.nonNull(type))
+            boardForExample.setType(type);
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("name", contains()); // exact match는 디폴트임. // contains 는 아마 LIKE 검색일 것 같은데.. 괜찮으려나
-        Example<Board> example = Example.of(new Board().setName(name).setIdOrganization(idOrganization).setType(type), matcher);
+        Example<Board> example = Example.of(boardForExample, matcher);
 
         return boardRepository.findAll(example);
     }

@@ -3,11 +3,15 @@ package ga.dochon.homepage.api.controller;
 import ga.dochon.homepage.model.entity.Board;
 import ga.dochon.homepage.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 public class BoardController {
@@ -16,33 +20,55 @@ public class BoardController {
 
     @PostMapping("/board")
     @ResponseBody
-    public int createBoard(@Valid @RequestBody Board board) {
-        return boardService.createBoard(board).getIdBoard();
+    public ResponseEntity<?> createBoard(@Valid @RequestBody Board board) {
+        try {
+            return new ResponseEntity<>(boardService.createBoard(board).getIdBoard(),HttpStatus.OK);
+        } catch (DataIntegrityViolationException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/board/{idBoard}")
     @ResponseBody
-    public Board getBoard(@PathVariable int idBoard) {
-        return boardService.getBoard(idBoard);
+    public ResponseEntity<?> getBoard(@PathVariable int idBoard) {
+        if (idBoard <= 0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Board board = boardService.getBoard(idBoard);
+
+        if (Objects.nonNull(board)) {
+            return new ResponseEntity<>(board,HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     @PatchMapping("/board")
     @ResponseBody
-    public boolean updateBoard(@Valid @RequestBody Board board) {
-        return boardService.updateBoard(board);
+    public ResponseEntity<Boolean> updateBoard(@Valid @RequestBody Board board) {
+        try {
+            return new ResponseEntity<>(boardService.updateBoard(board), HttpStatus.OK);
+        } catch (DataIntegrityViolationException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/board/{idBoard}")
     @ResponseBody
-    public boolean deleteBoard(@PathVariable int idBoard) {
-        return boardService.deleteBoard(idBoard);
+    public ResponseEntity<Boolean> deleteBoard(@PathVariable int idBoard) {
+        if (idBoard <= 0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(boardService.deleteBoard(idBoard), HttpStatus.OK);
     }
 
     @GetMapping("/boards")
     @ResponseBody
-    public List<Board> findBoards(@RequestParam(value = "name", required=false) String name,
+    public ResponseEntity<List<Board>> findBoards(@RequestParam(value = "name", required=false) String name,
                                    @RequestParam(value = "idOrganization", required=false) Integer idOrganization,
-                                   @RequestParam(value = "type", required=false) Short type) {
-        return boardService.findBoards(name, idOrganization, type);
+                                   @RequestParam(value = "type", required=false) Board.BoardType type) {
+        return new ResponseEntity<>(boardService.findBoards(name, idOrganization, type), HttpStatus.OK);
     }
 }

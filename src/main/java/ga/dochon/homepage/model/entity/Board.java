@@ -6,16 +6,16 @@ import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(name="Board")
 @Data // Lombok - Getter, Setter 사용
 @Accessors(chain = true) // Lombok - builder pattern 사용
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Hibernate의 Json 수정 관련 에러로 인해 추가
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Hibernate를 쓰는 객체들에는 handler가 필드로 붙는다. 근데 이 객체에 Jackson이 직렬화 시 필드들에 접근을 해야 하는데, getter가 없어 접근을 하지 못한다. 그래서 Ignore 처리.
 public class Board implements Serializable {
     @Id
     @GeneratedValue
@@ -41,11 +41,39 @@ public class Board implements Serializable {
 
     @Column
     @NotNull
-    @Min(0)
-    @Max(10)
-    private Short type;
+    private BoardType type;
 
     @Column
     @Length(max = 45)
     private String description;
+
+
+
+    public enum BoardType {
+        NORMAL ((short)1),
+        GALLERY ((short)2),
+        QNA ((short)3)
+        ;
+
+        private short type;
+        private static Map map = new HashMap<>();
+
+        BoardType(short type) {
+            this.type = type;
+        }
+
+        public short getType() {
+            return this.type;
+        }
+
+        static {
+            for (BoardType boardType : BoardType.values()) {
+                map.put(boardType.type, boardType);
+            }
+        }
+
+        public static BoardType valueOf(short boardType) {
+            return (BoardType) map.get(boardType);
+        }
+    }
 }
