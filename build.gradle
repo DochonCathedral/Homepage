@@ -37,6 +37,8 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     //compile('org.springframework.boot:spring-boot-starter-validation')
     //compile('org.springframework.session:spring-session-core')
+    compile("com.h2database:h2") // 테스트, 개발용 디비
+    compile("org.springframework.boot:spring-boot-devtools") // H2 Console 사용 위해..
     runtime('mysql:mysql-connector-java')
     compileOnly('org.projectlombok:lombok') // JDK10 에서 에러.. 람다에서 고치긴 했으나 아직 업데이트가  안나옴. 밑의 edge 버전 파일 사용하면 됨.
     //compile files('libs/lombok-edge.jar') // lombok 1.16.20 보다 높은 버전이 나오면 수정하자. (https://mvnrepository.com/artifact/org.projectlombok)
