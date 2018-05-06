@@ -7,6 +7,10 @@ addons:
   ssh_known_hosts:
     - $HOST_IP
 
+branches:
+  only:
+  - master
+
 before_install:
   - sudo apt-get install sshpass
 
