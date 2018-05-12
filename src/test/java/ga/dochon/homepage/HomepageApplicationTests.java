@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ga.dochon.homepage.model.entity.Article;
 import ga.dochon.homepage.model.entity.Board;
+import ga.dochon.homepage.service.ArticleService;
 import ga.dochon.homepage.service.BoardService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -33,16 +35,29 @@ public class HomepageApplicationTests {
     @Autowired
     private BoardService boardService;
 
+    @Autowired
+    private ArticleService articleService;
+
     @Before
     public void setUp() {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     public void boardTest() {
         boardGetTest();
         boardPostTest();
         boardPatchTest();
         boardDeleteTest();
+    }
+
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void articleTest() {
+        articleGetTest();
+//        articlePostTest();
+//        articlePatchTest();
+//        articleDeleteTest();
     }
 
     // Object to String
@@ -215,6 +230,65 @@ public class HomepageApplicationTests {
             Assert.assertNull(realBoard);
             // ToDo(@기현) : 이외에도 정말 게시글, 댓글까지 모두 삭제되었는지 확인해야 함.
             // ArticleService, CommentService 만들어지면 그것까지 검사하자..
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+
+    private void articleGetTest() {
+        int idArticle;
+        URI uri;
+        Article realArticle;
+        try {
+            //////////// 정상 상황 1
+            idArticle = 1;
+            uri = URI.create("/article/" + idArticle);
+            realArticle = articleService.getArticle(idArticle);
+            mockMvc.perform(get(uri))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.title").value(realArticle.getTitle()))
+                    .andExpect(jsonPath("$.idUser").value(realArticle.getIdUser()));
+
+            //////////// 정상 상황 2
+            idArticle = 2;
+            uri = URI.create("/article/" + idArticle);
+            realArticle = articleService.getArticle(idArticle);
+            mockMvc.perform(get(uri))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.title").value(realArticle.getTitle()))
+                    .andExpect(jsonPath("$.idUser").value(realArticle.getIdUser()));
+
+            //////////// 정상 상황 3 : 없는 번호로 조회 -> HTTP Code 203 리턴됨, 결과값은 null.  이걸로 할지 4XX로 할지?
+            idArticle = 100000000;
+            uri = URI.create("/article/" + idArticle);
+            mockMvc.perform(get(uri))
+                    .andExpect(status().isNoContent());
+
+            //////////// 음수를 넣으면 안됨 -> 4XX 에러 코드
+            idArticle = -50;
+            uri = URI.create("/article/" + idArticle);
+            realArticle = articleService.getArticle(idArticle);
+            mockMvc.perform(get(uri))
+                    .andExpect(status().is4xxClientError());
+
+            //////////// 목록 조회 정상 상황 1
+            uri = URI.create("/articles");
+            List<Article> realArticles = articleService.findArticles(null, null, null, null);
+            mockMvc.perform(get(uri))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$[2].title").value(realArticles.get(2).getTitle()))
+                    .andExpect(jsonPath("$[0].idUser").value(realArticles.get(0).getIdUser()));
+
+            //////////// 목록 조회 정상 상황 2
+            String nameSearch = "자유";
+            uri = URI.create("/articles?title=" + nameSearch);
+            realArticles = articleService.findArticles(nameSearch, null, null, null);
+            mockMvc.perform(get(uri))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$[0].title").value(realArticles.get(0).getTitle()));
 
         } catch (Exception e) {
             e.printStackTrace();
