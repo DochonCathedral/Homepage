@@ -1,11 +1,11 @@
 package ga.dochon.homepage.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@DynamicInsert
 @Entity
 @Table(name="Article")
 @Data
@@ -31,7 +32,7 @@ public class Article implements Serializable {
     private String title;
 
     @Column
-    @Positive
+    @Min(0)
     private Integer idUser;
 
     @Column
@@ -40,6 +41,7 @@ public class Article implements Serializable {
     private Integer idBoard;
 
     //@CreatedDate
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "dateCreated", nullable = false, columnDefinition="dateCreated default CURRENT_TIMESTAMP")
     private LocalDateTime dateCreated;
 

@@ -1,7 +1,10 @@
 package ga.dochon.homepage;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ga.dochon.homepage.model.entity.Article;
 import ga.dochon.homepage.model.entity.Board;
 import ga.dochon.homepage.service.ArticleService;
@@ -56,14 +59,18 @@ public class HomepageApplicationTests {
     public void articleTest() {
         articleGetTest();
         articlePostTest();
-//        articlePatchTest();
-//        articleDeleteTest();
+        articlePatchTest();
+        articleDeleteTest();
     }
 
     // Object to String
     private String jsonStringFromObject(Object object) {
         ObjectMapper mapper = new ObjectMapper();
         try {
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
             return mapper.writeValueAsString(object);
         } catch (JsonProcessingException jpe) {
             jpe.getMessage();
@@ -354,6 +361,64 @@ public class HomepageApplicationTests {
 
             mockMvc.perform(post("/article").contentType("application/json").content(failArticleJson))
                     .andExpect(status().is5xxServerError());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+
+    private void articlePatchTest() {
+        try {
+            int idArticle = 1;
+            Article realArticle = articleService.getArticle(idArticle);
+
+            ///////// 정상상황
+            Article articleToUpdate = realArticle.setTitle("수정 테스트 게시글").setIdBoard(2);
+
+            String articleJson = jsonStringFromObject(articleToUpdate);
+
+            MvcResult result =  mockMvc.perform(patch("/article").contentType("application/json").content(articleJson))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            boolean isSucceeded = Boolean.valueOf(result.getResponse().getContentAsString());
+            Assert.assertTrue(isSucceeded);
+
+            realArticle = articleService.getArticle(idArticle);
+            Assert.assertEquals(realArticle.getTitle(), articleToUpdate.getTitle());
+            Assert.assertEquals(realArticle.getIdBoard(), articleToUpdate.getIdBoard());
+
+            ///////// 없는 조직번호로 수정하면 서버 에러!
+            articleToUpdate = realArticle.setTitle("수정 테스트 게시글").setIdBoard(100000000);
+            articleJson = jsonStringFromObject(articleToUpdate);
+            result = mockMvc.perform(patch("/article").contentType("application/json").content(articleJson))
+                    .andExpect(status().is5xxServerError())
+                    .andReturn();
+
+            isSucceeded = Boolean.valueOf(result.getResponse().getContentAsString());
+            Assert.assertFalse(isSucceeded);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    private void articleDeleteTest() {
+        try {
+            //////////// 정상 상황
+            int idArticle = 1;
+            MvcResult result =  mockMvc.perform(delete("/article/" + idArticle))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            boolean isSucceeded = Boolean.valueOf(result.getResponse().getContentAsString());
+            Assert.assertTrue(isSucceeded);
+
+            Article realArticle = articleService.getArticle(idArticle);
+            Assert.assertEquals(Article.ArticleStatus.DELETED, realArticle.getStatus());
+
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail();
