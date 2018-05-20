@@ -55,7 +55,7 @@ public class HomepageApplicationTests {
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     public void articleTest() {
         articleGetTest();
-//        articlePostTest();
+        articlePostTest();
 //        articlePatchTest();
 //        articleDeleteTest();
     }
@@ -103,7 +103,6 @@ public class HomepageApplicationTests {
             //////////// 음수를 넣으면 안됨 -> 4XX 에러 코드
             idBoard = -50;
             uri = URI.create("/board/" + idBoard);
-            realBoard = boardService.getBoard(idBoard);
             mockMvc.perform(get(uri))
                     .andExpect(status().is4xxClientError());
 
@@ -149,6 +148,7 @@ public class HomepageApplicationTests {
             Assert.assertEquals(realBoard.getName(), board.getName());
             Assert.assertEquals(realBoard.getIdOrganization(), board.getIdOrganization());
             Assert.assertEquals(realBoard.getDescription(), board.getDescription());
+            Assert.assertEquals(realBoard.getType(), board.getType());
 
 
             ///////// name, description, idOrganization, type 중 하나가 없으면 실패
@@ -270,7 +270,6 @@ public class HomepageApplicationTests {
             //////////// 음수를 넣으면 안됨 -> 4XX 에러 코드
             idArticle = -50;
             uri = URI.create("/article/" + idArticle);
-            realArticle = articleService.getArticle(idArticle);
             mockMvc.perform(get(uri))
                     .andExpect(status().is4xxClientError());
 
@@ -290,6 +289,71 @@ public class HomepageApplicationTests {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$[0].title").value(realArticles.get(0).getTitle()));
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    private void articlePostTest() {
+        try {
+            ///////// 정상상황
+            Article article = new Article()
+                    .setTitle("테스트 게시글")
+                    .setIdUser(1)
+                    .setIdBoard(1)
+                    .setContents("<p>하하하하</p>")
+                    .setStatus(Article.ArticleStatus.CREATED)
+                    .setType(Article.ArticleType.NORMAL)
+                    //.setArticlePassword(1)
+                    //.setThumbnail(1)
+                    ;
+            String articleJson = jsonStringFromObject(article);
+
+            MvcResult result =  mockMvc.perform(post("/article").contentType("application/json").content(articleJson))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            int idArticle = Integer.valueOf(result.getResponse().getContentAsString());
+            Article realArticle = articleService.getArticle(idArticle);
+
+            Assert.assertEquals(realArticle.getTitle(), article.getTitle());
+            Assert.assertEquals(realArticle.getStatus(), article.getStatus());
+            Assert.assertEquals(realArticle.getContents(), article.getContents());
+
+
+            ///////// title, IdBoard 등 필요 파라미터 없으면 실패
+            Article failArticle = new Article()
+                    //.setTitle("테스트 게시글")
+                    .setIdUser(1)
+                    .setIdBoard(1)
+                    .setContents("<p>하하하하</p>")
+                    .setStatus(Article.ArticleStatus.CREATED)
+                    .setType(Article.ArticleType.NORMAL)
+                    //.setArticlePassword(1)
+                    //.setThumbnail(1)
+                    ;
+            String failArticleJson = jsonStringFromObject(failArticle);
+
+            mockMvc.perform(post("/article").contentType("application/json").content(failArticleJson))
+                    .andExpect(status().is4xxClientError());
+
+
+            ///////// 없는 idBoard 만들면 실패
+            failArticle = new Article()
+                    .setTitle("테스트 게시글")
+                    .setIdUser(1)
+                    .setIdBoard(10000000)
+                    .setContents("<p>하하하하</p>")
+                    .setStatus(Article.ArticleStatus.CREATED)
+                    .setType(Article.ArticleType.NORMAL)
+                    //.setArticlePassword(1)
+                    //.setThumbnail(1)
+                    ;
+            failArticleJson = jsonStringFromObject(failArticle);
+
+            mockMvc.perform(post("/article").contentType("application/json").content(failArticleJson))
+                    .andExpect(status().is5xxServerError());
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail();

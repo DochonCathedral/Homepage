@@ -1,7 +1,9 @@
 package ga.dochon.homepage.service;
 
 import ga.dochon.homepage.model.entity.Article;
+import ga.dochon.homepage.model.entity.Reply;
 import ga.dochon.homepage.model.repository.ArticleRepository;
+import ga.dochon.homepage.model.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -16,13 +18,16 @@ import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatc
 @Service
 public class ArticleService {
     @Autowired
-    ArticleRepository articleRepository;
+    private ArticleRepository articleRepository;
+
+    @Autowired
+    private ReplyRepository replyRepository;
 
     @Transactional
     public Article getArticle(int idArticle) {
         Example<Article> idExample = Example.of(new Article().setIdArticle(idArticle));
         Article article = articleRepository.findOne(idExample).orElse(null); // getOne()은 Lazyloading 함...
-        if (Objects.nonNull(article)) {
+        if (Objects.nonNull(article)) { // 존재하면, 조회수 +1
             articleRepository.save(article.incrementHit());
         }
         return article;
@@ -43,6 +48,11 @@ public class ArticleService {
     @Transactional
     public boolean removeArticle(int idArticle) {
         if (articleRepository.existsById(idArticle)) {
+            // 연결된 댓글을 완전히 삭제한다.
+            Example<Reply> replyExample = Example.of(new Reply().setIdArticle(idArticle));
+            List<Reply> replies = replyRepository.findAll(replyExample);
+            replyRepository.deleteAll(replies);
+
             articleRepository.deleteById(idArticle);
             return true;
         } else {

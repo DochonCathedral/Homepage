@@ -3,6 +3,7 @@ package ga.dochon.homepage.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -38,11 +39,11 @@ public class Article implements Serializable {
     @Positive
     private Integer idBoard;
 
-    @CreatedDate
-    @Column(name = "dateCreated", nullable = false)
+    //@CreatedDate
+    @Column(name = "dateCreated", nullable = false, columnDefinition="dateCreated default CURRENT_TIMESTAMP")
     private LocalDateTime dateCreated;
 
-    @Column
+    @Column(name = "countHit", nullable = false, columnDefinition="countHit default 0")
     @Positive
     private Integer countHit;
 
@@ -70,9 +71,9 @@ public class Article implements Serializable {
 
 
     public enum ArticleStatus {
-        CREATED ((short)1),
-        EDITED ((short)2),
-        DELETED ((short)3)
+        CREATED ((short)0), // 생성됨
+        EDITED ((short)1),  // 수정됨
+        DELETED ((short)2), // 삭제됨
         ;
 
         private short status;
@@ -99,9 +100,9 @@ public class Article implements Serializable {
 
 
     public enum ArticleType {
-        NORMAL ((short)1),
-        NOTICE ((short)2),
-        SECRET ((short)3),
+        NORMAL ((short)0), // 일반글
+        NOTICE ((short)1), // 공지글
+        SECRET ((short)2), // 비밀글
         ;
 
         private short type;

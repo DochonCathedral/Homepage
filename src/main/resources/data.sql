@@ -21,22 +21,24 @@ INSERT INTO Board(name, description, idOrganization, type) VALUES('자유 게시
 INSERT INTO Board(name, description, idOrganization, type) VALUES('사진 게시판', '사진 게시판 설명', 3, 2);
 
 INSERT INTO Article(title, idUser, idBoard, countHit, contents, status, type, articlePassword, thumbnail)
-  VALUES('테스트 게시글', 1, 1, 3, '테스트 글입니다.', 1, 1, null, null);
+  VALUES('테스트 게시글', 1, 1, 3, '테스트 글입니다.', 0, 0, null, null);
 INSERT INTO Article(title, idUser, idBoard, countHit, contents, status, type, articlePassword, thumbnail)
-  VALUES('자유 게시글', 1, 2, 50, '자유 글입니다.', 1, 2, null, null);
+  VALUES('자유 게시글', 1, 2, 50, '자유 글입니다.', 0, 1, null, null);
 INSERT INTO Article(title, idUser, idBoard, countHit, contents, status, type, articlePassword, thumbnail)
-  VALUES('자유 게시글 2', 2, 2, 25, '자유 글2 입니다.', 1, 1, null, null);
+  VALUES('비밀 게시글', 2, 2, 25, '비밀 글입니다.', 0, 2, 'password', null);
 INSERT INTO Article(title, idUser, idBoard, countHit, contents, status, type, articlePassword, thumbnail)
-  VALUES('사진 게시글', 3, 3, 10, '사진입니다.', 1, 1, null, 'pathThumbnail');
+  VALUES('사진 게시글', 3, 3, 10, '사진입니다.', 0, 0, null, 'pathThumbnail');
 
 INSERT INTO Reply(idArticle, idUser, idParent, contents, status, replyPassword)
-  VALUES(1, 1, null, '테스트 댓글', 1, null);
+  VALUES(1, 1, null, '테스트 댓글', 0, null);
 INSERT INTO Reply(idArticle, idUser, idParent, contents, status, replyPassword)
-  VALUES(1, 1, 1, '테스트 댓글2', 2, null);
+  VALUES(1, 1, 1, '테스트 댓글2', 1, null);
 INSERT INTO Reply(idArticle, idUser, idParent, contents, status, replyPassword)
-  VALUES(2, 2, null, '테스트 댓글3', 1, null);
+  VALUES(2, 2, null, '테스트 댓글3', 0, null);
 INSERT INTO Reply(idArticle, idUser, idParent, contents, status, replyPassword)
-  VALUES(1, 3, null, '테스트 댓글4', 1, null);
+  VALUES(1, 3, null, '테스트 댓글4', 0, null);
+INSERT INTO Reply(idArticle, idUser, idParent, contents, status, replyPassword)
+  VALUES(1, 3, null, '테스트 댓글4', 0, null);
 
 INSERT INTO Schedule(name, dateStart, dateEnd, idOrganization, idUser, description)
   VALUES('일정!', '2018-05-01', '2018-05-14', 1, 1, '5월 일정');
