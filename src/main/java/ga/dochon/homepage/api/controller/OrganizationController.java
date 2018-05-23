@@ -32,9 +32,12 @@ public class OrganizationController {
 	@PostMapping("/organization")
 	@ResponseBody
 	public ResponseEntity<?> createOrganization(@Valid @RequestBody Organization organization){
-		
-		return new ResponseEntity<>(organizationService.createOrganization(organization),HttpStatus.OK); 
-		
+        try {
+        	return new ResponseEntity<>(organizationService.createOrganization(organization),HttpStatus.OK);
+        } catch (DataIntegrityViolationException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 	}
 	
     @GetMapping("/organization/{idOrganization}")

@@ -1,10 +1,13 @@
 package ga.dochon.homepage.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
 import java.io.Serializable;
 
 @Entity
@@ -22,6 +25,7 @@ public class Organization implements Serializable {
     private Integer idParent; // null 일수 있으니 Integer
 
     @Column
+    @NotNull
     private String name;
 
     @Column
