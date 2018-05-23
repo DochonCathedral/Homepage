@@ -50,9 +50,9 @@ public class Board implements Serializable {
 
 
     public enum BoardType {
-        NORMAL ((short)1),
-        GALLERY ((short)2),
-        QNA ((short)3)
+        NORMAL ((short)0),
+        GALLERY ((short)1),
+        QNA ((short)2)
         ;
 
         private short type;

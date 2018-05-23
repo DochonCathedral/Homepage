@@ -12,6 +12,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(name="Reply")
@@ -31,6 +33,10 @@ public class Reply implements Serializable {
     @Column
     private Integer idParent;
 
+    @Column
+    @Min(0)
+    private Integer idUser;
+
     @CreatedDate
     @Column(name = "dateCreated", nullable = false)
     private LocalDateTime dateCreated;
@@ -42,11 +48,37 @@ public class Reply implements Serializable {
 
     @Column
     @NotNull
-    @Min(0)
-    @Max(10)
-    private Short status;
+    private ReplyStatus status;
 
     @Column
     @Length(max = 45)
     private String replyPassword;
+
+    public enum ReplyStatus {
+        CREATED ((short)0), // 생성됨
+        EDITED ((short)1),  // 수정됨
+        DELETED ((short)2), // 삭제됨
+        ;
+
+        private short status;
+        private static Map map = new HashMap<>();
+
+        ReplyStatus(short status) {
+            this.status = status;
+        }
+
+        public short getStatus() {
+            return this.status;
+        }
+
+        static {
+            for (ReplyStatus replyStatus : ReplyStatus.values()) {
+                map.put(replyStatus.status, replyStatus);
+            }
+        }
+
+        public static ReplyStatus valueOf(short replyStatus) {
+            return (ReplyStatus) map.get(replyStatus);
+        }
+    }
 }
