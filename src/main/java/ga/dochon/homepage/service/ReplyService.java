@@ -61,8 +61,10 @@ public class ReplyService {
         }
     }
 
-    public List<Reply> findReplies(Integer idUser, String contents) {
+    public List<Reply> findReplies(Integer idArticle, Integer idUser, String contents) {
         Reply replyForExample = new Reply();
+        if (Objects.nonNull(idArticle))
+            replyForExample.setIdArticle(idArticle);
         if (Objects.nonNull(idUser))
             replyForExample.setIdUser(idUser);
         if (Objects.nonNull(contents))

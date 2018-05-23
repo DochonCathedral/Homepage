@@ -66,8 +66,9 @@ public class ReplyController {
 
     @GetMapping("/replies")
     @ResponseBody
-    public ResponseEntity<List<Reply>> findReplies(@RequestParam(value = "idUser", required=false) Integer idUser,
-                                                  @RequestParam(value = "contents", required=false) String contents) {
-        return new ResponseEntity<>(replyService.findReplies(idUser, contents), HttpStatus.OK);
+    public ResponseEntity<List<Reply>> findReplies(@RequestParam(value = "idArticle", required=false) Integer idArticle,
+                                                   @RequestParam(value = "idUser", required=false) Integer idUser,
+                                                   @RequestParam(value = "contents", required=false) String contents) {
+        return new ResponseEntity<>(replyService.findReplies(idArticle, idUser, contents), HttpStatus.OK);
     }
 }

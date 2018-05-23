@@ -477,16 +477,16 @@ public class HomepageApplicationTests {
 
             //////////// 목록 조회 정상 상황 1
             uri = URI.create("/replies");
-            List<Reply> realReplys = replyService.findReplies(null, null);
+            List<Reply> realReplys = replyService.findReplies(1,null, null);
             mockMvc.perform(get(uri))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$[2].idUser").value(realReplys.get(2).getIdUser()))
+                    .andExpect(jsonPath("$[1].idUser").value(realReplys.get(1).getIdUser()))
                     .andExpect(jsonPath("$[0].contents").value(realReplys.get(0).getContents()));
 
             //////////// 목록 조회 정상 상황 2
             String contentsSearch = "댓글3";
             uri = URI.create("/replies?contents=" + contentsSearch);
-            realReplys = replyService.findReplies(null, contentsSearch);
+            realReplys = replyService.findReplies(null, null, contentsSearch);
             mockMvc.perform(get(uri))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$[0].contents").value(realReplys.get(0).getContents()));
