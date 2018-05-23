@@ -121,7 +121,7 @@ public class OrganizationTests {
 			
 			// 예외 케이스 1
 			// DB에 없는 idOrganization
-			idOrganization = 4;
+			idOrganization = 100;
 			uri = URI.create("/organization/" + idOrganization);
 			
 			this.mockMvc.perform(get(uri))
