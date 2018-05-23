@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ga.dochon.homepage.model.entity.Article;
 import ga.dochon.homepage.model.entity.Board;
+import ga.dochon.homepage.model.entity.Reply;
 import ga.dochon.homepage.service.ArticleService;
 import ga.dochon.homepage.service.BoardService;
+import ga.dochon.homepage.service.ReplyService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +43,9 @@ public class HomepageApplicationTests {
     @Autowired
     private ArticleService articleService;
 
+    @Autowired
+    private ReplyService replyService;
+
     @Before
     public void setUp() {
     }
@@ -61,6 +66,15 @@ public class HomepageApplicationTests {
         articlePostTest();
         articlePatchTest();
         articleDeleteTest();
+    }
+
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void replyTest() {
+        replyGetTest();
+        replyPostTest();
+        replyPatchTest();
+        replyDeleteTest();
     }
 
     // Object to String
@@ -418,6 +432,184 @@ public class HomepageApplicationTests {
 
             Article realArticle = articleService.getArticle(idArticle);
             Assert.assertEquals(Article.ArticleStatus.DELETED, realArticle.getStatus());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+
+    private void replyGetTest() {
+        int idReply;
+        URI uri;
+        Reply realReply;
+        try {
+            //////////// 정상 상황 1
+            idReply = 1;
+            uri = URI.create("/reply/" + idReply);
+            realReply = replyService.getReply(idReply);
+            mockMvc.perform(get(uri))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.idUser").value(realReply.getIdUser()))
+                    .andExpect(jsonPath("$.contents").value(realReply.getContents()));
+
+            //////////// 정상 상황 2
+            idReply = 2;
+            uri = URI.create("/reply/" + idReply);
+            realReply = replyService.getReply(idReply);
+            mockMvc.perform(get(uri))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.idUser").value(realReply.getIdUser()))
+                    .andExpect(jsonPath("$.contents").value(realReply.getContents()));
+
+            //////////// 정상 상황 3 : 없는 번호로 조회 -> HTTP Code 203 리턴됨, 결과값은 null.  이걸로 할지 4XX로 할지?
+            idReply = 100000000;
+            uri = URI.create("/reply/" + idReply);
+            mockMvc.perform(get(uri))
+                    .andExpect(status().isNoContent());
+
+            //////////// 음수를 넣으면 안됨 -> 4XX 에러 코드
+            idReply = -50;
+            uri = URI.create("/reply/" + idReply);
+            mockMvc.perform(get(uri))
+                    .andExpect(status().is4xxClientError());
+
+            //////////// 목록 조회 정상 상황 1
+            uri = URI.create("/replies");
+            List<Reply> realReplys = replyService.findReplies(null, null);
+            mockMvc.perform(get(uri))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$[2].idUser").value(realReplys.get(2).getIdUser()))
+                    .andExpect(jsonPath("$[0].contents").value(realReplys.get(0).getContents()));
+
+            //////////// 목록 조회 정상 상황 2
+            String contentsSearch = "댓글3";
+            uri = URI.create("/replies?contents=" + contentsSearch);
+            realReplys = replyService.findReplies(null, contentsSearch);
+            mockMvc.perform(get(uri))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$[0].contents").value(realReplys.get(0).getContents()));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    private void replyPostTest() {
+        try {
+            ///////// 정상상황
+            Reply reply = new Reply()
+                    .setIdUser(1)
+                    .setContents("하하하하1")
+                    .setStatus(Reply.ReplyStatus.CREATED)
+                    .setIdArticle(1)
+                    .setIdParent(1)
+                    //.setReplyPassword(1)
+                    ;
+            String replyJson = jsonStringFromObject(reply);
+
+            MvcResult result =  mockMvc.perform(post("/reply").contentType("application/json").content(replyJson))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            int idReply = Integer.valueOf(result.getResponse().getContentAsString());
+            Reply realReply = replyService.getReply(idReply);
+
+            Assert.assertEquals(realReply.getIdArticle(), reply.getIdArticle());
+            Assert.assertEquals(realReply.getStatus(), reply.getStatus());
+            Assert.assertEquals(realReply.getContents(), reply.getContents());
+
+
+            ///////// title, IdBoard 등 필요 파라미터 없으면 실패
+            Reply failReply = new Reply()
+                    .setIdUser(1)
+                    //.setContents("하하하하1")
+                    .setStatus(Reply.ReplyStatus.CREATED)
+                    .setIdArticle(1)
+                    .setIdParent(1)
+                    //.setReplyPassword(1)
+                    ;
+            String failReplyJson = jsonStringFromObject(failReply);
+
+            mockMvc.perform(post("/reply").contentType("application/json").content(failReplyJson))
+                    .andExpect(status().is4xxClientError());
+
+
+            ///////// 없는 idArticle 만들면 실패
+            failReply = new Reply()
+                    .setIdUser(1)
+                    .setContents("하하하하1")
+                    .setStatus(Reply.ReplyStatus.CREATED)
+                    .setIdArticle(100000)
+                    .setIdParent(1)
+            //.setReplyPassword(1)
+            ;
+            //.setReplyPassword(1)
+            //.setThumbnail(1)
+            ;
+            failReplyJson = jsonStringFromObject(failReply);
+
+            mockMvc.perform(post("/reply").contentType("application/json").content(failReplyJson))
+                    .andExpect(status().is5xxServerError());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+
+    private void replyPatchTest() {
+        try {
+            int idReply = 1;
+            Reply realReply = replyService.getReply(idReply);
+
+            ///////// 정상상황
+            Reply replyToUpdate = realReply.setContents("수정 댓글").setReplyPassword("pass");
+
+            String replyJson = jsonStringFromObject(replyToUpdate);
+
+            MvcResult result =  mockMvc.perform(patch("/reply").contentType("application/json").content(replyJson))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            boolean isSucceeded = Boolean.valueOf(result.getResponse().getContentAsString());
+            Assert.assertTrue(isSucceeded);
+
+            realReply = replyService.getReply(idReply);
+            Assert.assertEquals(realReply.getContents(), replyToUpdate.getContents());
+            Assert.assertEquals(realReply.getReplyPassword(), replyToUpdate.getReplyPassword());
+
+            ///////// 없는 게시글번호로 수정하면 서버 에러!
+            replyToUpdate = realReply.setContents("수정 테스트 게시글").setIdArticle(100000000);
+            replyJson = jsonStringFromObject(replyToUpdate);
+            result = mockMvc.perform(patch("/reply").contentType("application/json").content(replyJson))
+                    .andExpect(status().is5xxServerError())
+                    .andReturn();
+
+            isSucceeded = Boolean.valueOf(result.getResponse().getContentAsString());
+            Assert.assertFalse(isSucceeded);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    private void replyDeleteTest() {
+        try {
+            //////////// 정상 상황
+            int idReply = 1;
+            MvcResult result =  mockMvc.perform(delete("/reply/" + idReply))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            boolean isSucceeded = Boolean.valueOf(result.getResponse().getContentAsString());
+            Assert.assertTrue(isSucceeded);
+
+            Reply realReply = replyService.getReply(idReply);
+            Assert.assertEquals(Reply.ReplyStatus.DELETED, realReply.getStatus());
 
         } catch (Exception e) {
             e.printStackTrace();
