@@ -67,7 +67,7 @@ CREATE TABLE Article
     `idUser`           INT               NULL        COMMENT '회원번호',
     `idBoard`          INT               NOT NULL    COMMENT '게시판번호',
     `dateCreated`      DATETIME          NULL    DEFAULT CURRENT_TIMESTAMP COMMENT '작성일자',
-    `countHit`         INT               NOT NULL    COMMENT '조회 수',
+    `countHit`         INT               NULL    DEFAULT 0 COMMENT '조회 수',
     `contents`         VARCHAR(65535)    NOT NULL    COMMENT '글내용(HTML 로?)',
     `status`           TINYINT           NOT NULL    COMMENT '글 상태(수정됨, 삭제됨, 등)',
     `type`             TINYINT           NOT NULL    COMMENT '글 타입(비밀글, 공지글 등)',
