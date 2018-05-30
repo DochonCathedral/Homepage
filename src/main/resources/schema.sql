@@ -76,9 +76,6 @@ CREATE TABLE Article
     PRIMARY KEY (idArticle)
 );
 
-ALTER TABLE Article ADD CONSTRAINT FK_Article_idUser_User_idUser FOREIGN KEY (idUser)
- REFERENCES User (idUser)  ON DELETE RESTRICT ON UPDATE RESTRICT;
-
 ALTER TABLE Article ADD CONSTRAINT FK_Article_idBoard_Board_idBoard FOREIGN KEY (idBoard)
  REFERENCES Board (idBoard)  ON DELETE RESTRICT ON UPDATE RESTRICT;
 
@@ -100,10 +97,6 @@ CREATE TABLE Reply
 ALTER TABLE Reply ADD CONSTRAINT FK_Reply_idArticle_Article_idArticle FOREIGN KEY (idArticle)
  REFERENCES Article (idArticle)  ON DELETE RESTRICT ON UPDATE RESTRICT;
 
-ALTER TABLE Reply ADD CONSTRAINT FK_Reply_idUser_User_idUser FOREIGN KEY (idUser)
- REFERENCES User (idUser)  ON DELETE RESTRICT ON UPDATE RESTRICT;
-
-
 -- Registration Table Create SQL
 CREATE TABLE Registration
 (
@@ -117,10 +110,6 @@ CREATE TABLE Registration
 
 ALTER TABLE Registration ADD CONSTRAINT FK_Registration_idOrganization_Organization_idOrganization FOREIGN KEY (idOrganization)
  REFERENCES Organization (idOrganization)  ON DELETE RESTRICT ON UPDATE RESTRICT;
-
-ALTER TABLE Registration ADD CONSTRAINT FK_Registration_idUser_User_idUser FOREIGN KEY (idUser)
- REFERENCES User (idUser)  ON DELETE RESTRICT ON UPDATE RESTRICT;
-
 
 -- Menu Table Create SQL
 CREATE TABLE Menu
@@ -182,10 +171,6 @@ CREATE TABLE Schedule
 
 ALTER TABLE Schedule ADD CONSTRAINT FK_Schedule_idOrganization_Organization_idOrganization FOREIGN KEY (idOrganization)
  REFERENCES Organization (idOrganization)  ON DELETE RESTRICT ON UPDATE RESTRICT;
-
-ALTER TABLE Schedule ADD CONSTRAINT FK_Schedule_idUser_User_idUser FOREIGN KEY (idUser)
- REFERENCES User (idUser)  ON DELETE RESTRICT ON UPDATE RESTRICT;
-
 
 -- FileAttachment Table Create SQL
 CREATE TABLE FileAttachment

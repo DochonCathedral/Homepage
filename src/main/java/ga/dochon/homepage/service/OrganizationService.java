@@ -4,23 +4,16 @@ import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatc
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
-import org.hibernate.query.criteria.internal.ValueHandlerFactory.IntegerValueHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sun.org.apache.xpath.internal.operations.Or;
-
-import ga.dochon.homepage.model.entity.Article;
-import ga.dochon.homepage.model.entity.Board;
 import ga.dochon.homepage.model.entity.Organization;
-import ga.dochon.homepage.model.entity.Reply;
 import ga.dochon.homepage.model.repository.OrganizationRepository;
 
 @Service

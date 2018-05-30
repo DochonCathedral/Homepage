@@ -11,6 +11,8 @@ INSERT INTO User(idKakao, name, nickname, accessToken, freshToken, thumbnail)
   VALUES(200000, '이기현', 'varian', null, null, 'pathVarian');
 INSERT INTO User(idKakao, name, nickname, accessToken, freshToken, thumbnail)
   VALUES(300000, '유창석', 'bsyo2k', 'accessBsyo', 'freshBsyo', null);
+INSERT INTO User(idKakao, name, nickname, accessToken, freshToken, thumbnail)
+  VALUES(400000, '이기현멋남', 'varianBest', 'null', 'null', null);
 
 INSERT INTO Registration(idOrganization, idUser, level, description) VALUES(1, 1, 2, '관리자');
 INSERT INTO Registration(idOrganization, idUser, level, description) VALUES(2, 1, 3, '신부');
